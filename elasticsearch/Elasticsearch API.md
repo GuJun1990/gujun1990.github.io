@@ -2,6 +2,12 @@
 
 ## 1. 文档API
 
+文档API的请求通常包含三个重要的参数：
+
+1. 索引名称： index
+2. 类型名称： type
+3. 文档ID： docId
+
 ### 1.1 Index API
 
 ```java
