@@ -1,5 +1,5 @@
 ## Welcome to GitHub Pages
 ## 目录
 
-[Elasticsearch](./elasticsearch/Elasticsearch API.md)
+[Elasticsearch](https://github.com/GuJun1990/gujun1990.github.io#elasticsearch/Elasticsearch API.md)
 
