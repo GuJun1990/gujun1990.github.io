@@ -42,10 +42,70 @@ docker run -d --name es-6.0.1 -p 9200:9200 -p 9300:9300 -e "discovery.type=singl
 
 ## 6. 设置同义词
 
-同义词组件是ES自带的，不需要额外安装插件，但是要想让同义词和IK一起使用，就需要配置自己的分析器。
+同义词组件是ES自带的，不需要额外安装插件，但是要想让同义词和IK一起使用，就需要配置自己的**分析器**。
 
 1. 进入ES容器`docker exec -it es-6.0.1 /bin/bash`
+
 2. 创建同义词字典`mkdir config/analysis && vi config/analysis/synonym.dic`
+
+3. 自定义分析器
+
+   PUT /my-index
+
+   ```json
+   {
+   	"settings": {
+   		"analysis": {
+         "analyzer": {
+           "ik_synonym": {
+             "type": "custom",
+             "tokenizer": "ik_max_word",
+             "filter": [
+               "my_synonym_filter"
+             ]
+           }
+         },
+         "filter": {
+           "my_synonym_filter": {
+             "type": "synonym",
+             "synonyms_path": "analysis/synonym.dic"
+           }
+         }
+       }
+   	}
+   }
+   ```
+
+   标准分析器的设置需要提供如下三个字段：
+
+   ```json
+   {
+     "type": "custom",
+     "tokenizer": "ik_max_word",
+     "filter": ["my_synonym_filter"]
+   }
+   ```
+
+   ## 7. 关于分析器
+
+   **分析**包含下面过程：
+
+   - 首先，将一段文本分成适合倒排索引的独立**词条**；
+   - 之后，将这些词条统一化为标准格式以提高他们的“可搜索性”，或者叫“recall”
+
+   分析器执行上面的工作，实际上**分析器**将三个功能封装到一个包里：
+
+   **字符过滤器**
+
+   ​		首先，字符串按照顺序通过每个**字符过滤器**，他们的任务是在分词前整理字符串，如去掉HTML，或者将`&`转化成`and`等。
+
+   **分词器**
+
+   ​		其次，字符串被**分词器**分为单个词条。一个简单的分词器遇到空格和标点的时候，可能会将文本拆分成词条。
+
+   **词条过滤器**
+
+   ​		最后，词条按顺序通过每一个**词条过滤器**，这个过程可能会改变词条，如小写化，删除词条(停用词)，增加词条(同义词)
 
 
 
